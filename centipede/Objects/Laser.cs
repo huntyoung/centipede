@@ -9,28 +9,34 @@ namespace centipede.Objects
 {
     class Laser
     {
-        private Vector2 m_playerSize;
+        public Vector2 m_laserSize { get; set; }
 
-        private int m_xPos;
-        private int m_yPos;
+        public int m_xPos { get; set; }
+        public int m_yPos { get; set; }
+
+        public Rectangle m_laserRectangle { get; set; }
 
         public Laser(Vector2 size, Vector2 position)
         {
-            this.m_playerSize = size;
+            this.m_laserSize = size;
             this.m_xPos = (int)position.X;
             this.m_yPos = (int)position.Y;
         }
 
         public void update(GameTime gameTime)
         {
-            m_yPos -= 5;
+            m_yPos -= 8;
+            m_laserRectangle = new Rectangle(
+                (int)(m_xPos + (m_laserSize.X / 2)), (int)(m_yPos + (m_laserSize.Y / 2)), 
+                (int)m_laserSize.X, (int)m_laserSize.Y
+            );
         }
 
         public void draw(SpriteBatch spriteBatch, Texture2D spriteSheet, Vector2 locationOnSheet, Vector2 subImDimensions)
         {
             spriteBatch.Draw(
                 spriteSheet,
-                new Rectangle((int)(m_xPos + (m_playerSize.X / 2)), (int)(m_yPos + (m_playerSize.Y / 2)), (int)m_playerSize.X, (int)m_playerSize.Y), // Destination rectangle
+                m_laserRectangle, // Destination rectangle
                 new Rectangle((int)locationOnSheet.X, (int)locationOnSheet.Y, (int)subImDimensions.X, (int)subImDimensions.Y), // Source sub-texture
                 Color.White,
                 0, // Angular rotation

@@ -22,6 +22,9 @@ namespace centipede.Objects
 
         private float elapsedTime;
 
+        public Rectangle m_spiderRectangle { get; set; }
+
+
         public Spider(Vector2 size, Vector2 center) : base(size, center)
         {
         }
@@ -47,6 +50,17 @@ namespace centipede.Objects
                 float carryOverTime = elapsedTime - 1.5f;
                 elapsedTime = carryOverTime;
             }
+
+            updateRectangle();
+        }
+
+        public void updateRectangle()
+        {
+            m_spiderRectangle = new Rectangle(
+                (int)(m_center.X + (m_size.X / 2)), (int)(m_center.Y + (m_size.Y / 2)),  // Rectangle Location
+                (int)m_size.X, (int)m_size.Y  // Rectangle Dimensions
+            );
+            m_spriteRectangle = m_spiderRectangle;
         }
     }
 }

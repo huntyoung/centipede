@@ -18,11 +18,11 @@ namespace centipede
         private AnimatedSprite m_headRenderer;
         private AnimatedSprite m_segmentRenderer;
         private Objects.Player m_player;
-        private Objects.Spider m_spider;
+        private List<Objects.Spider> m_spiders = new List<Objects.Spider>();
         private AnimatedSprite m_spiderRenderer;
-        private Objects.Scorpion m_scorpion;
+        private List<Objects.Scorpion> m_scorpions = new List<Objects.Scorpion>();
         private AnimatedSprite m_scorpionRenderer;
-        private Objects.Flea m_flea;
+        private List<Objects.Flea> m_fleas = new List<Objects.Flea>();
         private AnimatedSprite m_fleaRenderer;
 
         private Texture2D m_spriteSheet;
@@ -31,6 +31,13 @@ namespace centipede
 
         private int m_gameWidth = 512;
         private int m_gameHeight = 512;
+
+        private int m_segmentCount = 12;
+        private int m_mushroomCount = 40;
+        private float spiderElapsedTime;
+        private float fleaElapsedTime;
+        private float scorpionElapsedTime;
+
 
         public CentipedeGame()
         {
@@ -60,11 +67,11 @@ namespace centipede
                 new Vector2(m_gameWidth/2, m_gameHeight - 16) // location
             );
 
-            for (int i=0; i < 30; i++)
+            for (int i=0; i < m_mushroomCount; i++)
             {
                 bool exists = false;
                 int x = rnd.Next(32) * 16;
-                int y = rnd.Next(1, 28) * 16;
+                int y = rnd.Next(1, 30) * 16;
                 foreach (var mushroom in m_mushrooms)
                 {
                     if (mushroom.m_xPos == x && mushroom.m_yPos == y)
@@ -82,18 +89,23 @@ namespace centipede
                 }
             }
 
-            Objects.CentipedeSegment prevSegment;
-            for (int i=0; i<8; i++)
+            Objects.CentipedeSegment prevSegment = null;
+            for (int i=0; i<m_segmentCount; i++)
             {
                 Objects.CentipedeSegment segment = new Objects.CentipedeSegment(
                     new Vector2(16, 16),  // size on screen
                     new Vector2(16 * i, 0) // location on screen
                 );
-                prevSegment = segment;
 
-                if (i == 0) segment.m_childSegment = null;
-                if (i > 0) segment.m_childSegment = prevSegment;
-                if (i == 7) segment.m_isHead = true;
+                segment.m_childSegment = prevSegment;
+                if (prevSegment != null) prevSegment.m_parentSegment = segment;
+                if (i == m_segmentCount - 1)
+                {
+                    segment.m_isHead = true;
+                    segment.m_parentSegment = null;
+                }
+
+                prevSegment = segment;
 
                 m_segments.Add(segment);
             }
@@ -115,10 +127,10 @@ namespace centipede
             );
 
 
-            m_spider = new Objects.Spider(
+            m_spiders.Add(new Objects.Spider(
                 new Vector2(32, 16),  // size on screen
                 new Vector2(-64, 450) // location on screen
-            );
+            ));
 
             m_spiderRenderer = new AnimatedSprite(
                 m_spriteSheet,
@@ -129,10 +141,10 @@ namespace centipede
             );
 
 
-            m_scorpion = new Objects.Scorpion(
+            m_scorpions.Add(new Objects.Scorpion(
                 new Vector2(32, 16),  // size on screen
-                new Vector2(200, 50) // location on screen
-            );
+                new Vector2(0, 0) // location on screen
+            ));
 
             m_scorpionRenderer = new AnimatedSprite(
                 m_spriteSheet,
@@ -140,12 +152,6 @@ namespace centipede
                 new Vector2(0, 56), // starting location on sheet
                 new Vector2(16, 8),  // width and height of subimage on sheet
                 false
-            );
-
-
-            m_flea = new Objects.Flea(
-                new Vector2(32, 16),  // size on screen
-                new Vector2(200, 200) // location on screen
             );
 
             m_fleaRenderer = new AnimatedSprite(
@@ -163,20 +169,51 @@ namespace centipede
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            m_player.laserCollision(m_segments, m_mushrooms, m_spiders);
+            m_player.playerCollision(m_segments, m_mushrooms, m_spiders, m_fleas, m_scorpions);
+
             m_headRenderer.update(gameTime);
             m_segmentRenderer.update(gameTime);
-            m_spider.update(gameTime, rnd);
             m_spiderRenderer.update(gameTime);
             m_scorpionRenderer.update(gameTime);
             m_fleaRenderer.update(gameTime);
 
-            m_player.update(gameTime);
-
+            foreach (var spider in m_spiders) spider.update(gameTime, rnd);
+            foreach (var flea in m_fleas) flea.update(gameTime);
+            foreach (var scorpion in m_scorpions) scorpion.update(gameTime);
             foreach (var segment in m_segments)
             {
+                segment.segmentCollision(m_mushrooms);
                 segment.update(gameTime);
             }
+
+            m_player.update(gameTime);
+
+
+            if (m_spiders.Count == 0)
+            {
+                spiderElapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (spiderElapsedTime >= 5f)
+                {
+                    m_spiders.Add(new Objects.Spider(
+                        new Vector2(32, 16),  // size on screen
+                        new Vector2(-64, 450) // location on screen
+                    ));
+                    spiderElapsedTime = 0;
+                }
+            }
+
+
+            //fleaElapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //if (fleaElapsedTime >= 2f)
+            //{
+            //    m_fleas.Add(new Objects.Flea(
+            //        new Vector2(16, 8),  // size on screen
+            //        new Vector2(200, 200) // location on screen
+            //    ));
+            //    float carryOverTime = fleaElapsedTime - 2f;
+            //    fleaElapsedTime = carryOverTime;
+            //}
 
 
             base.Update(gameTime);
@@ -186,25 +223,24 @@ namespace centipede
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             m_spriteBatch.Begin();
 
-            m_spiderRenderer.draw(m_spriteBatch, m_spider);
-            m_scorpionRenderer.draw(m_spriteBatch, m_scorpion);
-            m_fleaRenderer.draw(m_spriteBatch, m_flea);
+            foreach (var spider in m_spiders) m_spiderRenderer.draw(m_spriteBatch, spider);
+            //foreach (var scorpion in m_scorpions) m_scorpionRenderer.draw(m_spriteBatch, scorpion);
+            foreach (var flea in m_fleas) m_fleaRenderer.draw(m_spriteBatch, flea);
 
             m_player.draw(m_spriteBatch, m_spriteSheet, new Vector2(0, 80), new Vector2(8, 8));
 
-            foreach (var mushroom in m_mushrooms)
-            {
-                mushroom.draw(m_spriteBatch, m_spriteSheet, new Vector2(64, 0), new Vector2(8,8));
-            }
             foreach (var segment in m_segments)
             {
                 if (segment.m_isHead) m_headRenderer.draw(m_spriteBatch, segment);
                 else m_segmentRenderer.draw(m_spriteBatch, segment);
             }
-
+            foreach (var mushroom in m_mushrooms)
+            {
+                mushroom.draw(m_spriteBatch, m_spriteSheet, new Vector2(64, 0), new Vector2(8,8));
+            }
+            
             m_spriteBatch.End();
 
             base.Draw(gameTime);

@@ -15,6 +15,8 @@ namespace centipede
         private Vector2 m_locationOnSheet;
         private Vector2 m_subImDimensions;
 
+        private Rectangle m_spriteRectangle;
+
         private bool down = false;
         private bool multipleRows;
 
@@ -55,7 +57,7 @@ namespace centipede
         {
             spriteBatch.Draw(
                 m_spriteSheet,
-                new Rectangle((int)(model.Center.X + (model.Size.X / 2)), (int)(model.Center.Y + (model.Size.Y / 2)), (int)model.Size.X, (int)model.Size.Y), // Destination rectangle
+                model.SpriteRectangle,
                 new Rectangle((int)(m_locationOnSheet.X + (m_column * m_subImDimensions.X)), down ? (int)m_locationOnSheet.Y + (int)m_subImDimensions.Y : (int)m_locationOnSheet.Y, (int)m_subImDimensions.X, (int)m_subImDimensions.Y), // Source sub-texture
                 Color.White,
                 model.Rotation, // Angular rotation

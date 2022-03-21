@@ -7,11 +7,18 @@ namespace centipede.Objects
         protected Vector2 m_size;
         protected Vector2 m_center;
         protected float m_rotation = 0;
+        protected Rectangle m_spriteRectangle;
 
         public AnimatedSprite(Vector2 size, Vector2 center)
         {
             m_size = size;
-            m_center = center;
+            m_center = center;   
+        }
+
+        public Rectangle SpriteRectangle
+        {
+            get { return m_spriteRectangle; }
+            set { m_spriteRectangle = value; }
         }
 
         public Vector2 Size
