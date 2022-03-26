@@ -7,7 +7,7 @@ namespace centipede
         [STAThread]
         static void Main()
         {
-            using (var game = new CentipedeGame())
+            using (var game = new GameStateDemo())
                 game.Run();
         }
     }

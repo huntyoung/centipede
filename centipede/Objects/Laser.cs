@@ -27,7 +27,7 @@ namespace centipede.Objects
         {
             m_yPos -= 8;
             m_laserRectangle = new Rectangle(
-                (int)(m_xPos + (m_laserSize.X / 2)), (int)(m_yPos + (m_laserSize.Y / 2)), 
+                (int)(m_xPos), (int)(m_yPos), 
                 (int)m_laserSize.X, (int)m_laserSize.Y
             );
         }

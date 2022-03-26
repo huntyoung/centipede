@@ -13,12 +13,12 @@ namespace centipede.Objects
         private int randX;
         private int randY;
 
-        private int[] xLeft = new int[] { -1, 0 };
-        private int[] xRight = new int[] { 0, 1 };
-        private int[] y = new int[] { -1, 1 };
+        private int[] xLeft = new int[] { -2, 0 };
+        private int[] xRight = new int[] { 0, 2 };
+        private int[] y = new int[] { -2, 2 };
 
         private int m_gameWidth = 512;
-        private int m_gameHeight = 512;
+        private int m_gameHeight = 544;
 
         private float elapsedTime;
 
@@ -33,12 +33,12 @@ namespace centipede.Objects
         {
             m_center.X += randX;
 
-            if (m_center.Y < m_gameHeight - (m_gameHeight / 3)) randY = 1;
-            else if (m_center.Y > m_gameHeight - 16) randY = -1;
+            if (m_center.Y < m_gameHeight - (m_gameHeight / 3)) randY = 2;
+            else if (m_center.Y > m_gameHeight - 16) randY = -2;
             m_center.Y += randY;
 
-            if (m_center.X == m_gameWidth + m_size.X) goingRight = false;
-            else if (m_center.X == m_size.X * -2) goingRight = true;
+            if (m_center.X >= m_gameWidth + m_size.X) goingRight = false;
+            else if (m_center.X <= m_size.X * -2) goingRight = true;
 
             elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (elapsedTime >= 1.5f)

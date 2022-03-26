@@ -13,6 +13,50 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/explosion_1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/explosion_1.wav
+
+#begin audio/explosion_2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/explosion_2.mp3
+
+#begin audio/gun_shot.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/gun_shot.mp3
+
+#begin audio/mushroom_hit.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/mushroom_hit.mp3
+
+#begin audio/punch.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/punch.wav
+
+#begin Fonts/font1.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/font1.spritefont
+
+#begin Fonts/font2.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/font2.spritefont
+
 #begin images/spritesheet.png
 /importer:TextureImporter
 /processor:TextureProcessor

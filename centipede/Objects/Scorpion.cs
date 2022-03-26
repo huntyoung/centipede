@@ -11,12 +11,12 @@ namespace centipede.Objects
 
         public Scorpion(Vector2 size, Vector2 center) : base(size, center)
         {
-            //m_moveRate = moveRate;
-            //m_rotateRate = rotateRate;
         }
 
         public void update(GameTime gameTime)
         {
+            m_center.X += 2;
+
             updateRectangle();
         }
         public void updateRectangle()
@@ -26,6 +26,18 @@ namespace centipede.Objects
                 (int)m_size.X, (int)m_size.Y  // Rectangle Dimensions
             );
             m_spriteRectangle = m_scorpionRectangle;
+        }
+
+        public void scorpionCollision(List<Mushroom> mushrooms)
+        {
+            foreach (var mushroom in mushrooms)
+            {
+                if (m_scorpionRectangle.Intersects(mushroom.m_mushroomRectangle))
+                {
+                    mushroom.m_isPoisoned = true;
+                    break;
+                }
+            }
         }
     }
 }
